@@ -78,7 +78,8 @@ func (u *UF2File) createCompositeSlice() []byte {
 	var compositeSlice []byte
 
 	for _, block := range u.Blocks {
-		compositeSlice = append(compositeSlice, block.Data[:]...)
+		span := block.PayloadSize
+		compositeSlice = append(compositeSlice, block.Data[:span]...)
 	}
 
 	return compositeSlice
@@ -87,8 +88,9 @@ func (u *UF2File) createCompositeSlice() []byte {
 // UpdateUF2File updates the UF2File blocks with the modified data.
 func (u *UF2File) updateFile(modifiedData []byte) {
 	for i := range u.Blocks {
-		span := len(u.Blocks[i].Data)
-		copy(u.Blocks[i].Data[:], modifiedData[i*span:(i+1)*span])
+		span := u.Blocks[i].PayloadSize
+		copy(u.Blocks[i].Data[:span], modifiedData[:span])
+		modifiedData = modifiedData[span:]
 	}
 }
 
