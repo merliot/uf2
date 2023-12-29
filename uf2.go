@@ -73,6 +73,13 @@ func (u *UF2File) Write(filename string) error {
 	return nil
 }
 
+// ReplaceBytes replaces (once) old slice with new slice in the UF2File.
+func (u *UF2File) ReplaceBytes(oldBytes, newBytes []byte) {
+	compositeSlice := u.createCompositeSlice()
+	modifiedData := bytes.Replace(compositeSlice, oldBytes, newBytes, 1)
+	u.updateFile(modifiedData)
+}
+
 // CreateCompositeSlice creates a composite slice from all the Data slices in UF2File.
 func (u *UF2File) createCompositeSlice() []byte {
 	var compositeSlice []byte
@@ -92,11 +99,4 @@ func (u *UF2File) updateFile(modifiedData []byte) {
 		copy(u.Blocks[i].Data[:span], modifiedData[:span])
 		modifiedData = modifiedData[span:]
 	}
-}
-
-// ReplaceBytes replaces (once) old slice with new slice in the UF2File.
-func (u *UF2File) ReplaceBytes(oldBytes, newBytes []byte) {
-	compositeSlice := u.createCompositeSlice()
-	modifiedData := bytes.Replace(compositeSlice, oldBytes, newBytes, 1)
-	u.updateFile(modifiedData)
 }
